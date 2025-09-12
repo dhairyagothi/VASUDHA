@@ -1,0 +1,52 @@
+{
+  "name": "vasudha",
+  "version": "1.0.0",
+  "description": "Digital Farm Management Portal for MRL & AMU Monitoring",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend && pip install -r ml-model/requirements.txt",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ml\" \"npm run dev:iot\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:ml": "cd ml-model && python -m uvicorn main:app --reload --port 8000",
+    "dev:iot": "cd iot-service && npm run dev",
+    "dev:blockchain": "cd blockchain && npm run dev",
+    "build:all": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test:all": "npm run test:frontend && npm run test:backend && npm run test:ml",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:ml": "cd ml-model && python -m pytest",
+    "db:migrate": "cd backend && npm run db:migrate",
+    "db:seed": "cd backend && npm run db:seed",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "lint:all": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "clean": "rm -rf */node_modules */dist */build */.next"
+  },
+  "keywords": [
+    "livestock",
+    "farming",
+    "antimicrobial",
+    "MRL",
+    "AMU",
+    "food-safety",
+    "blockchain",
+    "IoT",
+    "machine-learning"
+  ],
+  "author": "VASUDHA Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

@@ -1,0 +1,213 @@
+version: '3.8'
+
+services:
+  # Frontend - React + Vite
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+      - VITE_ML_API_URL=http://localhost:8000
+      - VITE_BLOCKCHAIN_URL=http://localhost:7000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - vasudha-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://vasudha:password123@postgres:5432/vasudha_db
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-super-secret-jwt-key-here
+      - ML_SERVICE_URL=http://ml-service:8000
+      - BLOCKCHAIN_URL=http://blockchain:7000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+      - ml-service
+    networks:
+      - vasudha-network
+
+  # ML Model Service
+  ml-service:
+    build:
+      context: ./ml-model
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://vasudha:password123@postgres:5432/vasudha_db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./ml-model:/app
+      - ml-models-data:/app/models
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vasudha-network
+
+  # Blockchain Service
+  blockchain:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    ports:
+      - "7000:7000"
+    environment:
+      - NODE_ENV=development
+      - NETWORK_CONFIG=/app/network/config.yaml
+    volumes:
+      - ./blockchain:/app
+      - blockchain-data:/app/data
+    networks:
+      - vasudha-network
+
+  # IoT Service (MQTT Broker + Gateway)
+  iot-service:
+    build:
+      context: ./iot-service
+      dockerfile: Dockerfile
+    ports:
+      - "1883:1883"  # MQTT port
+      - "9001:9001"  # MQTT WebSocket port
+      - "4000:4000"  # API port
+    environment:
+      - MQTT_PORT=1883
+      - MQTT_WS_PORT=9001
+      - DATABASE_URL=postgresql://vasudha:password123@postgres:5432/vasudha_db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./iot-service:/app
+      - iot-data:/app/data
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vasudha-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=vasudha_db
+      - POSTGRES_USER=vasudha
+      - POSTGRES_PASSWORD=password123
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - vasudha-network
+
+  # Redis Cache & Queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - vasudha-network
+
+  # TimescaleDB (for IoT time-series data)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=vasudha_timeseries
+      - POSTGRES_USER=vasudha
+      - POSTGRES_PASSWORD=password123
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    networks:
+      - vasudha-network
+
+  # PgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@vasudha.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - vasudha-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - vasudha-network
+
+  # Grafana for Monitoring
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - vasudha-network
+
+  # Prometheus for Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - vasudha-network
+
+volumes:
+  postgres-data:
+  redis-data:
+  timescale-data:
+  pgadmin-data:
+  grafana-data:
+  prometheus-data:
+  ml-models-data:
+  blockchain-data:
+  iot-data:
+
+networks:
+  vasudha-network:
+    driver: bridge
