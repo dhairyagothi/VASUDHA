@@ -19,8 +19,8 @@ import {
 import { useFarmStore } from '../../store/farmStore'
 
 const AnimalProfile = () => {
-  const { animals } = useFarmStore()
-  const [selectedAnimal, setSelectedAnimal] = useState(null)
+  const { animals, deleteAnimal, updateAnimal, setSelectedAnimal, selectedAnimal } = useFarmStore()
+  const [localSelectedAnimal, setLocalSelectedAnimal] = useState(selectedAnimal)
   const [activeTab, setActiveTab] = useState('overview')
   const [showQR, setShowQR] = useState(false)
   const printRef = useRef()
@@ -92,7 +92,7 @@ const AnimalProfile = () => {
     ]
   }
 
-  const animal = selectedAnimal || mockAnimalDetails
+  const animal = localSelectedAnimal || animals[0] || mockAnimalDetails
 
   const generateQRData = () => {
     return JSON.stringify({
@@ -166,13 +166,28 @@ const AnimalProfile = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Animal Profile</h1>
           <p className="text-gray-600">Comprehensive animal health and history records</p>
         </div>
-        
-        <div className="flex items-center space-x-3">
+        {/* Animal selector */}
+        <div className="flex items-center gap-3">
+          {animals.length > 0 && (
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              value={localSelectedAnimal ? localSelectedAnimal.id : ''}
+              onChange={e => {
+                const found = animals.find(a => a.id === e.target.value)
+                setLocalSelectedAnimal(found)
+                setSelectedAnimal(found)
+              }}
+            >
+              {animals.map(a => (
+                <option key={a.id} value={a.id}>{a.tagId} - {a.breed}</option>
+              ))}
+            </select>
+          )}
           <button
             onClick={() => setShowQR(true)}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -180,7 +195,6 @@ const AnimalProfile = () => {
             <QrCodeIcon className="h-5 w-5" />
             <span>QR Code</span>
           </button>
-          
           <button
             onClick={handlePrint}
             className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
@@ -188,7 +202,6 @@ const AnimalProfile = () => {
             <PrinterIcon className="h-5 w-5" />
             <span>Print</span>
           </button>
-          
           <button className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
             <ShareIcon className="h-5 w-5" />
             <span>Share</span>
@@ -197,51 +210,50 @@ const AnimalProfile = () => {
       </div>
 
       {/* Animal Basic Info Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-              <TagIcon className="h-10 w-10 text-gray-400" />
+      <div className="bg-white rounded-2xl shadow border border-gray-100 p-8 mb-2">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
+          <div className="flex items-center gap-5">
+            <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center border-2 border-green-200">
+              <TagIcon className="h-12 w-12 text-green-500" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{animal.tagId}</h2>
-              <p className="text-lg text-gray-600">{animal.breed}</p>
-              <p className="text-sm text-gray-500">{animal.farmName}, {animal.farmLocation}</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-1">{animal.tagId}</h2>
+              <div className="flex items-center gap-2 text-base text-gray-600">
+                <span>{animal.breed}</span>
+                <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500">{animal.species}</span>
+              </div>
+              <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                <ShieldCheckIcon className="h-4 w-4 text-green-400" />
+                {animal.farmName}, {animal.farmLocation}
+              </div>
             </div>
           </div>
-          
-          <div className="text-right">
-            <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(animal.healthStatus)}`}>
-              {animal.healthStatus.replace('_', ' ').toUpperCase()}
-            </span>
-            <p className="text-sm text-gray-500 mt-2">Owner: {animal.owner}</p>
+          <div className="flex flex-col items-end gap-2">
+            <span className={`inline-flex px-4 py-1 text-base font-semibold rounded-full ${getStatusColor(animal.healthStatus)}`}>{animal.healthStatus.replace('_', ' ').toUpperCase()}</span>
+            <span className="text-sm text-gray-500">Owner: <span className="font-medium text-gray-700">{animal.owner}</span></span>
           </div>
         </div>
-
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <CalendarDaysIcon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-            <div className="text-lg font-semibold text-gray-900">{getAge(animal.dateOfBirth)}</div>
-            <div className="text-sm text-gray-600">Age</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="flex flex-col items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <CalendarDaysIcon className="h-7 w-7 text-blue-500 mb-1" />
+            <div className="text-xl font-bold text-gray-900">{getAge(animal.dateOfBirth)}</div>
+            <div className="text-sm text-gray-500">Age</div>
           </div>
-          
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <HeartIcon className="h-6 w-6 text-red-600 mx-auto mb-2" />
-            <div className="text-lg font-semibold text-gray-900">{animal.weight}kg</div>
-            <div className="text-sm text-gray-600">Weight</div>
+          <div className="flex flex-col items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <HeartIcon className="h-7 w-7 text-red-500 mb-1" />
+            <div className="text-xl font-bold text-gray-900">{animal.weight}kg</div>
+            <div className="text-sm text-gray-500">Weight</div>
           </div>
-          
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <TruckIcon className="h-6 w-6 text-green-600 mx-auto mb-2" />
-            <div className="text-lg font-semibold text-gray-900">{animal.treatments.length}</div>
-            <div className="text-sm text-gray-600">Treatments</div>
+          <div className="flex flex-col items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <TruckIcon className="h-7 w-7 text-green-500 mb-1" />
+            <div className="text-xl font-bold text-gray-900">{animal.treatments.length}</div>
+            <div className="text-sm text-gray-500">Treatments</div>
           </div>
-          
-          <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <ShieldCheckIcon className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-            <div className="text-lg font-semibold text-gray-900">{animal.vaccinations.length}</div>
-            <div className="text-sm text-gray-600">Vaccinations</div>
+          <div className="flex flex-col items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <ShieldCheckIcon className="h-7 w-7 text-purple-500 mb-1" />
+            <div className="text-xl font-bold text-gray-900">{animal.vaccinations.length}</div>
+            <div className="text-sm text-gray-500">Vaccinations</div>
           </div>
         </div>
 
