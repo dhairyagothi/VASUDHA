@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  PlusIcon, 
-  MapPinIcon, 
+import {
+  PlusIcon,
+  MapPinIcon,
   BuildingOfficeIcon,
   UserGroupIcon,
   ChartBarIcon,
-  PencilIcon,
+  PencilSquareIcon,
   TrashIcon,
-  EyeIcon
+  EyeIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 import { useFarmStore } from '../../store/farmStore'
 
@@ -16,6 +19,8 @@ const FarmManagement = () => {
   const { farms, addFarm, updateFarm, deleteFarm, setSelectedFarm } = useFarmStore()
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingFarm, setEditingFarm] = useState(null)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
   const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
 
   const [newFarm, setNewFarm] = useState({
@@ -105,6 +110,23 @@ const FarmManagement = () => {
       animals: []
     })
     setShowAddModal(false)
+  }
+
+  const handleEditFarm = (farm) => {
+    setEditingFarm(farm)
+    setShowEditModal(true)
+  }
+
+  const handleUpdateFarm = (e) => {
+    e.preventDefault()
+    updateFarm(editingFarm.id, editingFarm)
+    setEditingFarm(null)
+    setShowEditModal(false)
+  }
+
+  const handleDeleteFarm = (farmId) => {
+    deleteFarm(farmId)
+    setDeleteTarget(null)
   }
 
   const getStatusColor = (score) => {
@@ -215,53 +237,55 @@ const FarmManagement = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl shadow border border-gray-100 p-6 hover:shadow-lg transition-shadow relative group"
             >
-              <div className="flex items-start justify-between mb-4">
+              {/* Status badge */}
+              <span className={`absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(farm.complianceScore)} shadow-sm`}>{getStatusText(farm.complianceScore)}</span>
+              {/* Card header */}
+              <div className="flex items-center gap-3 mb-2">
+                <BuildingOfficeIcon className="h-7 w-7 text-blue-500" />
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{farm.name}</h3>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{farm.name}</h3>
+                  <div className="flex items-center text-xs text-gray-500 mt-0.5">
                     <MapPinIcon className="h-4 w-4 mr-1" />
                     {farm.location}
-                  </p>
-                </div>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(farm.complianceScore)}`}>
-                  {getStatusText(farm.complianceScore)}
-                </span>
-              </div>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Owner:</span>
-                  <span className="text-gray-900">{farm.owner}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Type:</span>
-                  <span className="text-gray-900 capitalize">{farm.farmType}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Animals:</span>
-                  <span className="text-gray-900">{farm.animals}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Size:</span>
-                  <span className="text-gray-900">{farm.size}</span>
+                  </div>
                 </div>
               </div>
-              
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                  Compliance: {farm.complianceScore}%
+              {/* Card body */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mb-3">
+                <div className="text-gray-500">Owner</div>
+                <div className="text-gray-900 font-medium">{farm.owner}</div>
+                <div className="text-gray-500">Type</div>
+                <div className="text-gray-900 font-medium capitalize">{farm.farmType}</div>
+                <div className="text-gray-500">Animals</div>
+                <div className="text-gray-900 font-medium">{farm.animals}</div>
+                <div className="text-gray-500">Size</div>
+                <div className="text-gray-900 font-medium">{farm.size}</div>
+              </div>
+              {/* Compliance and actions */}
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <CheckCircleIcon className="h-4 w-4 text-green-500" />
+                  Compliance: <span className="ml-1 text-gray-900 font-semibold">{farm.complianceScore}%</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                    <EyeIcon className="h-4 w-4" />
+                <div className="flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                  <button className="p-1.5 rounded-full hover:bg-blue-50" title="View">
+                    <EyeIcon className="h-4 w-4 text-blue-500" />
                   </button>
-                  <button className="p-1 text-gray-400 hover:text-green-600 transition-colors">
-                    <PencilIcon className="h-4 w-4" />
+                  <button
+                    className="p-1.5 rounded-full hover:bg-green-50"
+                    title="Edit"
+                    onClick={() => handleEditFarm(farm)}
+                  >
+                    <PencilSquareIcon className="h-4 w-4 text-green-500" />
                   </button>
-                  <button className="p-1 text-gray-400 hover:text-red-600 transition-colors">
-                    <TrashIcon className="h-4 w-4" />
+                  <button
+                    className="p-1.5 rounded-full hover:bg-red-50"
+                    title="Delete"
+                    onClick={() => setDeleteTarget(farm)}
+                  >
+                    <TrashIcon className="h-4 w-4 text-red-500" />
                   </button>
                 </div>
               </div>
@@ -320,9 +344,172 @@ const FarmManagement = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button className="text-blue-600 hover:text-blue-900">View</button>
-                      <button className="text-green-600 hover:text-green-900">Edit</button>
-                      <button className="text-red-600 hover:text-red-900">Delete</button>
+                      <button
+                        className="text-green-600 hover:text-green-900"
+                        onClick={() => handleEditFarm(farm)}
+                      >Edit</button>
+                      <button
+                        className="text-red-600 hover:text-red-900"
+                        onClick={() => setDeleteTarget(farm)}
+                      >Delete</button>
                     </div>
+      {/* Edit Farm Modal */}
+      {showEditModal && editingFarm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Edit Farm</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateFarm} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Farm Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingFarm.name}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Owner Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingFarm.owner}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, owner: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  required
+                  value={editingFarm.location}
+                  onChange={(e) => setEditingFarm({ ...editingFarm, location: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Farm Type</label>
+                  <select
+                    value={editingFarm.farmType}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, farmType: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="dairy">Dairy</option>
+                    <option value="poultry">Poultry</option>
+                    <option value="mixed">Mixed</option>
+                    <option value="cattle">Cattle</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Farm Size</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingFarm.size}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, size: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    value={editingFarm.phone}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, phone: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={editingFarm.email}
+                    onChange={(e) => setEditingFarm({ ...editingFarm, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
+                <input
+                  type="text"
+                  required
+                  value={editingFarm.registrationNumber}
+                  onChange={(e) => setEditingFarm({ ...editingFarm, registrationNumber: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              <div className="flex items-center justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md"
+          >
+            <div className="flex items-center mb-4">
+              <ExclamationTriangleIcon className="h-6 w-6 text-red-500 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Delete Farm</h3>
+            </div>
+            <p className="mb-6 text-gray-700">Are you sure you want to delete <span className="font-semibold">{deleteTarget.name}</span>? This action cannot be undone.</p>
+            <div className="flex items-center justify-end space-x-4">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteFarm(deleteTarget.id)}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
                   </td>
                 </tr>
               ))}

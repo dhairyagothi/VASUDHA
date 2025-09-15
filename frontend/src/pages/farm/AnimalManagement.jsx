@@ -161,6 +161,24 @@ const AnimalManagement = () => {
               List
             </button>
           </div>
+
+          <div className="flex items-center space-x-4">
+              <div className="h-6 border-l border-gray-300" />
+              <div className="text-sm text-gray-600">View Mode</div>
+              <div>
+                <div>
+                  <boxmodel>
+                    <div>
+                      
+                    </div>
+                  </boxmodel>
+                  <div>
+                    <h2>cow name</h2>
+                    <p>details</p>
+                  </div>
+                </div>
+              </div>
+          </div>
           
           <button
             onClick={() => setShowAddModal(true)}
