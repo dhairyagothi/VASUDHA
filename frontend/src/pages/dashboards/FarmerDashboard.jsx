@@ -8,7 +8,13 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   QrCodeIcon,
-  BellIcon
+  BellAlertIcon,
+  BeakerIcon,
+  CheckCircleIcon,
+  TruckIcon,
+  IdentificationIcon,
+  BoltIcon,
+  Squares2X2Icon
 } from '@heroicons/react/24/outline'
 
 // Components
@@ -32,7 +38,7 @@ const FarmerDashboard = () => {
     {
       title: 'Record Drug Administration',
       description: 'Quick drug administration entry',
-      icon: ClipboardDocumentListIcon,
+      icon: BeakerIcon,
       color: 'bg-blue-500',
       href: '/administration'
     },
@@ -46,7 +52,7 @@ const FarmerDashboard = () => {
     {
       title: 'Collect Sample',
       description: 'Register new sample collection',
-      icon: CubeIcon,
+      icon: IdentificationIcon,
       color: 'bg-purple-500',
       href: '/sampling'
     },
@@ -56,6 +62,13 @@ const FarmerDashboard = () => {
       icon: UserGroupIcon,
       color: 'bg-orange-500',
       href: '/animals'
+    },
+    {
+      title: 'Order Supplies',
+      description: 'Request new inventory items',
+      icon: TruckIcon,
+      color: 'bg-pink-500',
+      href: '/order-supplies'
     }
   ]
 
@@ -108,33 +121,47 @@ const FarmerDashboard = () => {
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
+      {/* Header with quick stats */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg p-6 text-white"
+        className="bg-gradient-to-r from-green-700 to-blue-700 rounded-2xl p-8 text-white shadow-lg"
       >
-        <h1 className="text-2xl font-bold mb-2">Good morning, Rajesh! 🌅</h1>
-        <p className="opacity-90">Today's farm overview and important updates</p>
-        
-        {/* Quick stats in header */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          <div className="bg-white/20 rounded-lg p-3">
-            <div className="text-lg font-semibold">{stats.totalAnimals}</div>
-            <div className="text-sm opacity-90">Total Animals</div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-1">Good morning, Rajesh! <span role='img' aria-label='sunrise'>🌅</span></h1>
+            <p className="opacity-90 text-lg">Today's farm overview and important updates</p>
           </div>
-          <div className="bg-white/20 rounded-lg p-3">
-            <div className="text-lg font-semibold">{stats.complianceScore}%</div>
-            <div className="text-sm opacity-90">Compliance Score</div>
-          </div>
-          <div className="bg-white/20 rounded-lg p-3">
-            <div className="text-lg font-semibold">{stats.withdrawalPending}</div>
-            <div className="text-sm opacity-90">Pending Withdrawals</div>
-          </div>
-          <div className="bg-white/20 rounded-lg p-3">
-            <div className="text-lg font-semibold">{stats.lowStock}</div>
-            <div className="text-sm opacity-90">Low Stock Items</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 md:mt-0">
+            <div className="flex items-center gap-3 bg-white/20 rounded-xl p-4">
+              <UserGroupIcon className="w-7 h-7 text-white/90" />
+              <div>
+                <div className="text-xl font-semibold">{stats.totalAnimals}</div>
+                <div className="text-xs opacity-90">Total Animals</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 bg-white/20 rounded-xl p-4">
+              <CheckCircleIcon className="w-7 h-7 text-white/90" />
+              <div>
+                <div className="text-xl font-semibold">{stats.complianceScore}%</div>
+                <div className="text-xs opacity-90">Compliance Score</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 bg-white/20 rounded-xl p-4">
+              <ExclamationTriangleIcon className="w-7 h-7 text-yellow-300" />
+              <div>
+                <div className="text-xl font-semibold">{stats.withdrawalPending}</div>
+                <div className="text-xs opacity-90">Pending Withdrawals</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 bg-white/20 rounded-xl p-4">
+              <BoltIcon className="w-7 h-7 text-white/90" />
+              <div>
+                <div className="text-xl font-semibold">{stats.lowStock}</div>
+                <div className="text-xs opacity-90">Low Stock Items</div>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -154,7 +181,7 @@ const FarmerDashboard = () => {
           value="18 types"
           change="2 low stock"
           changeType="negative"
-          icon={CubeIcon}
+          icon={Squares2X2Icon}
           color="purple"
         />
         <StatCard
@@ -170,47 +197,47 @@ const FarmerDashboard = () => {
           value={`${stats.complianceScore}%`}
           change="+5% this month"
           changeType="positive"
-          icon={ArrowUpIcon}
+          icon={CheckCircleIcon}
           color="orange"
         />
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
           {/* Quick Actions */}
           <QuickActions actions={quickActions} />
-          
+
           {/* Recent Activity */}
           <RecentActivity activities={recentActivities} />
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Alerts Panel */}
           <AlertsPanel alerts={alerts} />
-          
+
           {/* Weather Widget */}
           <WeatherWidget location="Maharashtra, India" />
-          
+
           {/* AI Risk Score Card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">AI Risk Assessment</h3>
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">Low Risk</div>
               <div className="text-sm text-gray-600 mb-4">
                 Your farm compliance is excellent
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>MRL Compliance</span>
@@ -232,10 +259,10 @@ const FarmerDashboard = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">IoT Sensors</h3>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Milk Quality Sensor</span>
