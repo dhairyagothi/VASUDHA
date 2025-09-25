@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAuthStore } from '../../store/authStore'
 import { 
   ShieldCheckIcon, 
   CubeIcon, 
@@ -9,26 +8,10 @@ import {
   UserGroupIcon,
   ClipboardDocumentCheckIcon,
   GlobeAltIcon,
-  ArrowRightIcon,
-  EyeIcon,
-  EyeSlashIcon
+  ArrowRightIcon
 } from '@heroicons/react/24/outline'
-import toast from 'react-hot-toast'
 
 const LandingPage = () => {
-  const [isLoginMode, setIsLoginMode] = useState(false)
-  const [showRegister, setShowRegister] = useState(false)
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    role: 'farmer',
-    name: '',
-    confirmPassword: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  
-  const { mockLogin } = useAuthStore()
   const navigate = useNavigate()
 
   const features = [
@@ -65,262 +48,20 @@ const LandingPage = () => {
   ]
 
   const userTypes = [
-    { role: 'farmer', label: 'Farmer/Producer', description: 'Livestock farmers and producers', color: 'bg-green-600 hover:bg-green-700' },
+    { role: 'producer', label: 'Producer/Farmer', description: 'Livestock farmers and producers', color: 'bg-green-600 hover:bg-green-700' },
     { role: 'veterinarian', label: 'Veterinarian', description: 'Licensed veterinary professionals', color: 'bg-blue-600 hover:bg-blue-700' },
     { role: 'lab', label: 'Laboratory', description: 'Testing and diagnostic laboratories', color: 'bg-purple-600 hover:bg-purple-700' },
+    { role: 'collector', label: 'Collector', description: 'Sample and product collectors', color: 'bg-orange-600 hover:bg-orange-700' },
     { role: 'regulator', label: 'Regulator', description: 'Government regulatory officials', color: 'bg-red-600 hover:bg-red-700' },
     { role: 'admin', label: 'Administrator', description: 'System administrators', color: 'bg-gray-600 hover:bg-gray-700' },
   ]
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    try {
-      // For demo purposes, use mock login
-      mockLogin(formData.role)
-      toast.success(`Welcome! Logged in as ${formData.role}`)
-      navigate('/')
-    } catch (error) {
-      toast.error('Authentication failed. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleQuickLogin = (role) => {
-    mockLogin(role)
-    toast.success(`Demo login successful as ${role}`)
-    navigate('/')
-  }
-
-  if (isLoginMode) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-        <div className="flex min-h-screen">
-          {/* Left Side - Ministry Branding */}
-          <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-900 to-green-800 text-white p-12 flex-col justify-center">
-            <div className="max-w-md">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="flex items-center space-x-3 mb-8">
-                  <img 
-                    src="/logo.png" 
-                    alt="VASUDHA Logo" 
-                    className="w-12 h-12 object-contain bg-white rounded-lg p-1"
-                  />
-                  <div>
-                    <h1 className="text-2xl font-bold">VASUDHA</h1>
-                    <p className="text-blue-200 text-sm">Digital Farm Management Portal</p>
-                  </div>
-                </div>
-                
-                <h2 className="text-3xl font-bold mb-4">
-                  Ministry of Fisheries, Animal Husbandry & Dairying
-                </h2>
-                <p className="text-xl text-blue-100 mb-8">
-                  Government of India Initiative for Livestock Safety & Compliance
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <ClipboardDocumentCheckIcon className="h-6 w-6 text-green-300" />
-                    <span>MRL & AMU Monitoring</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <ChartBarIcon className="h-6 w-6 text-green-300" />
-                    <span>Real-time Compliance Tracking</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <UserGroupIcon className="h-6 w-6 text-green-300" />
-                    <span>Multi-stakeholder Platform</span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Right Side - Login Form */}
-          <div className="w-full lg:w-1/2 p-8 lg:p-12 flex items-center justify-center">
-            <motion.div 
-              className="w-full max-w-md"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {showRegister ? 'Create Account' : 'Welcome Back'}
-                </h3>
-                <p className="text-gray-600">
-                  {showRegister ? 'Register for VASUDHA portal access' : 'Sign in to your VASUDHA account'}
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {showRegister && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    User Type
-                  </label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {userTypes.map((type) => (
-                      <option key={type.role} value={type.role}>
-                        {type.label} - {type.description}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full px-3 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    >
-                      {showPassword ? (
-                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <EyeIcon className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {showRegister && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Confirm your password"
-                      required
-                    />
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
-                >
-                  {isLoading ? 'Processing...' : (showRegister ? 'Create Account' : 'Sign In')}
-                </button>
-              </form>
-
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => setShowRegister(!showRegister)}
-                  className="text-blue-600 hover:text-blue-500"
-                >
-                  {showRegister ? 'Already have an account? Sign in' : 'Need an account? Register'}
-                </button>
-              </div>
-
-              <div className="mt-8">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">Quick Demo Access</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  {userTypes.slice(0, 4).map((type) => (
-                    <button
-                      key={type.role}
-                      onClick={() => handleQuickLogin(type.role)}
-                      className={`${type.color} text-white px-3 py-2 rounded text-sm hover:opacity-90 transition-colors`}
-                    >
-                      {type.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => setIsLoginMode(false)}
-                  className="text-gray-600 hover:text-gray-500 text-sm"
-                >
-                  ← Back to Overview
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    )
+    navigate(`/auth/login?role=${role}`)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -338,8 +79,8 @@ const LandingPage = () => {
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setIsLoginMode(true)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={() => navigate('/auth/login')}
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
                 Access Portal
               </button>
@@ -358,13 +99,13 @@ const LandingPage = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="mb-8">
-              <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className="inline-flex items-center space-x-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
                 <GlobeAltIcon className="h-4 w-4" />
                 <span>Government of India Initiative</span>
               </div>
               
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                <span className="text-blue-600">VASUDHA</span><br />
+                <span className="text-green-600">VASUDHA</span><br />
                 Digital Farm Management Portal
               </h1>
               
@@ -381,8 +122,8 @@ const LandingPage = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => setIsLoginMode(true)}
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-lg font-medium"
+                onClick={() => navigate('/auth/login')}
+                className="bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 text-lg font-medium"
               >
                 <span>Get Started</span>
                 <ArrowRightIcon className="h-5 w-5" />
@@ -421,7 +162,7 @@ const LandingPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
               >
-                <feature.icon className="h-12 w-12 text-blue-600 mb-4" />
+                <feature.icon className="h-12 w-12 text-green-600 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">
                   {feature.title}
                 </h3>
@@ -471,10 +212,9 @@ const LandingPage = () => {
                 </p>
                 <button
                   onClick={() => {
-                    setFormData({ ...formData, role: type.role })
-                    setIsLoginMode(true)
+                    navigate(`/auth/login?role=${type.role}`)
                   }}
-                  className="text-blue-600 hover:text-blue-500 font-medium flex items-center space-x-1"
+                  className="text-green-600 hover:text-green-500 font-medium flex items-center space-x-1"
                 >
                   <span>Access Dashboard</span>
                   <ArrowRightIcon className="h-4 w-4" />
@@ -486,7 +226,7 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-900 text-white">
+      <section className="py-20 bg-green-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -496,13 +236,13 @@ const LandingPage = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to Transform Livestock Management?
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-green-100 mb-8 max-w-3xl mx-auto">
               Join thousands of farmers, veterinarians, and officials using VASUDHA for safer, 
               more compliant livestock management across India.
             </p>
             <button
-              onClick={() => setIsLoginMode(true)}
-              className="bg-white text-blue-900 px-8 py-4 rounded-lg hover:bg-blue-50 transition-colors text-lg font-medium"
+              onClick={() => navigate('/auth/login')}
+              className="bg-white text-green-800 px-8 py-4 rounded-lg hover:bg-green-50 transition-colors text-lg font-medium"
             >
               Start Using VASUDHA Today
             </button>
@@ -519,7 +259,7 @@ const LandingPage = () => {
                 <img 
                   src="/logo.png" 
                   alt="VASUDHA Logo" 
-                  className="w-8 h-8 object-contain bg-blue-600 rounded-lg p-1"
+                  className="w-8 h-8 object-contain bg-green-600 rounded-lg p-1"
                 />
                 <span className="text-lg font-bold">VASUDHA</span>
               </div>

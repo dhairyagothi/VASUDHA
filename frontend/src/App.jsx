@@ -12,11 +12,12 @@ import Register from './pages/auth/Register'
 import LandingPage from './pages/auth/LandingPage'
 
 // Dashboard Pages
-import FarmerDashboard from './pages/dashboards/FarmerDashboard'
+import ProducerDashboard from './pages/dashboards/ProducerDashboard'
 import VeterinarianDashboard from './pages/dashboards/VeterinarianDashboard'
 import LabDashboard from './pages/dashboards/LabDashboard'
 import RegulatorDashboard from './pages/dashboards/RegulatorDashboard'
 import AdminDashboard from './pages/dashboards/AdminDashboard'
+import CollectorDashboard from './pages/dashboards/CollectorDashboard'
 
 // Farm Management
 import FarmManagement from './pages/farm/FarmManagement'
@@ -42,6 +43,33 @@ import AuditTrail from './pages/regulator/AuditTrail'
 import Profile from './pages/shared/Profile'
 import Settings from './pages/shared/Settings'
 
+// Main Dashboard
+import MainDashboard from './components/common/MainDashboard'
+
+// Producer Components
+import AMULogging from './components/producer/AMULogging'
+import AlertsReminders from './components/producer/AlertsReminders'
+import ComplianceDashboard from './components/producer/ComplianceDashboard'
+import AnimalProfiles from './components/producer/AnimalProfiles'
+import MarketplaceIntegration from './components/producer/MarketplaceIntegration'
+
+// Veterinarian Components
+import DigitalPrescriptionManagement from './components/veterinarian/DigitalPrescriptionManagement'
+import FarmOversightDashboard from './components/veterinarian/FarmOversightDashboard'
+import Teleconsultation from './components/veterinarian/Teleconsultation'
+import KnowledgeBase from './components/veterinarian/KnowledgeBase'
+
+// Lab Components
+import SampleManagement from './components/lab/SampleManagement'
+import ResultSubmission from './components/lab/ResultSubmission'
+import DataAPIInterface from './components/lab/DataAPIInterface'
+
+// Collector Components
+import FarmComplianceCheck from './components/collector/FarmComplianceCheck'
+import CollectionScheduling from './components/collector/CollectionScheduling'
+import DigitalReceipts from './components/collector/DigitalReceipts'
+import RiskInsights from './components/collector/RiskInsights'
+
 // Store
 import { useAuthStore } from './store/authStore'
 
@@ -64,9 +92,10 @@ function App() {
   // Get dashboard based on user role
   const getDashboardRoute = (role) => {
     switch (role) {
-      case 'farmer': return '/dashboard/farmer'
+      case 'producer': return '/dashboard/producer'
       case 'veterinarian': return '/dashboard/veterinarian'
       case 'lab': return '/dashboard/lab'
+      case 'collector': return '/dashboard/collector'
       case 'regulator': return '/dashboard/regulator'
       case 'admin': return '/dashboard/admin'
       default: return '/'
@@ -87,10 +116,15 @@ function App() {
           } />
           
           {/* Auth Routes */}
-          <Route path="/auth" element={<AuthLayout />}>
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-          </Route>
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+
+          {/* Main Dashboard Route */}
+          <Route path="/main-dashboard" element={
+            <ProtectedRoute>
+              <MainDashboard />
+            </ProtectedRoute>
+          } />
 
           {/* Protected Dashboard Routes */}
           <Route path="/dashboard" element={
@@ -98,9 +132,9 @@ function App() {
               <Layout />
             </ProtectedRoute>
           }>
-            <Route path="farmer" element={
-              <ProtectedRoute allowedRoles={['farmer']}>
-                <FarmerDashboard />
+            <Route path="producer" element={
+              <ProtectedRoute allowedRoles={['producer']}>
+                <ProducerDashboard />
               </ProtectedRoute>
             } />
             
@@ -113,6 +147,12 @@ function App() {
             <Route path="lab" element={
               <ProtectedRoute allowedRoles={['lab']}>
                 <LabDashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="collector" element={
+              <ProtectedRoute allowedRoles={['collector']}>
+                <CollectorDashboard />
               </ProtectedRoute>
             } />
             
@@ -158,6 +198,54 @@ function App() {
             {/* Profile & Settings */}
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
+          </Route>
+
+          {/* Producer Routes */}
+          <Route path="/producer" element={
+            <ProtectedRoute allowedRoles={['producer']}>
+              <Layout />
+            </ProtectedRoute>
+          }>
+            <Route path="amu-logging" element={<AMULogging />} />
+            <Route path="alerts" element={<AlertsReminders />} />
+            <Route path="compliance" element={<ComplianceDashboard />} />
+            <Route path="animal-profiles" element={<AnimalProfiles />} />
+            <Route path="marketplace" element={<MarketplaceIntegration />} />
+          </Route>
+
+          {/* Veterinarian Routes */}
+          <Route path="/veterinarian" element={
+            <ProtectedRoute allowedRoles={['veterinarian']}>
+              <Layout />
+            </ProtectedRoute>
+          }>
+            <Route path="prescriptions" element={<DigitalPrescriptionManagement />} />
+            <Route path="farm-oversight" element={<FarmOversightDashboard />} />
+            <Route path="teleconsultation" element={<Teleconsultation />} />
+            <Route path="knowledge-base" element={<KnowledgeBase />} />
+          </Route>
+
+          {/* Lab Routes */}
+          <Route path="/lab" element={
+            <ProtectedRoute allowedRoles={['lab']}>
+              <Layout />
+            </ProtectedRoute>
+          }>
+            <Route path="sample-management" element={<SampleManagement />} />
+            <Route path="result-submission" element={<ResultSubmission />} />
+            <Route path="data-api" element={<DataAPIInterface />} />
+          </Route>
+
+          {/* Collector Routes */}
+          <Route path="/collector" element={
+            <ProtectedRoute allowedRoles={['collector']}>
+              <Layout />
+            </ProtectedRoute>
+          }>
+            <Route path="compliance-check" element={<FarmComplianceCheck />} />
+            <Route path="scheduling" element={<CollectionScheduling />} />
+            <Route path="receipts" element={<DigitalReceipts />} />
+            <Route path="risk-insights" element={<RiskInsights />} />
           </Route>
 
           {/* Catch all route */}

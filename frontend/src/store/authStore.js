@@ -86,11 +86,11 @@ const useAuthStore = create(
       // Mock login for demo purposes
       mockLogin: (role) => {
         const mockUsers = {
-          farmer: {
+          producer: {
             id: '1',
             name: 'Rajesh Kumar',
             email: 'rajesh@farm.com',
-            role: 'farmer',
+            role: 'producer',
             farmId: 'farm_001',
             phone: '+91-9876543210',
             location: 'Maharashtra, India'
@@ -113,22 +113,31 @@ const useAuthStore = create(
             accreditation: 'NABL-2023',
             phone: '+91-9876543212'
           },
-          regulator: {
+          collector: {
             id: '4',
+            name: 'Suresh Patil',
+            email: 'suresh@collector.com',
+            role: 'collector',
+            collectorId: 'COL_001',
+            region: 'Pune District',
+            phone: '+91-9876543213'
+          },
+          regulator: {
+            id: '5',
             name: 'Amit Singh',
             email: 'amit@ministry.gov.in',
             role: 'regulator',
             department: 'Ministry of Fisheries',
             region: 'Western India',
-            phone: '+91-9876543213'
+            phone: '+91-9876543214'
           },
           admin: {
-            id: '5',
+            id: '6',
             name: 'System Admin',
             email: 'admin@vasudha.com',
             role: 'admin',
             permissions: ['all'],
-            phone: '+91-9876543214'
+            phone: '+91-9876543215'
           }
         }
 

@@ -24,7 +24,7 @@ import RecentActivity from '../../components/common/RecentActivity'
 import WeatherWidget from '../../components/common/WeatherWidget'
 import AlertsPanel from '../../components/common/AlertsPanel'
 
-const FarmerDashboard = () => {
+const ProducerDashboard = () => {
   const [stats, setStats] = useState({
     totalAnimals: 45,
     activeAnimals: 42,
@@ -130,8 +130,8 @@ const FarmerDashboard = () => {
       >
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-1">Good morning, Rajesh! <span role='img' aria-label='sunrise'>🌅</span></h1>
-            <p className="opacity-90 text-lg">Today's farm overview and important updates</p>
+            <h1 className="text-3xl font-bold mb-1">Good morning, Producer! <span role='img' aria-label='sunrise'>🌅</span></h1>
+            <p className="opacity-90 text-lg">Today's livestock overview and important updates</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 md:mt-0">
             <div className="flex items-center gap-3 bg-white/20 rounded-xl p-4">
@@ -235,7 +235,7 @@ const FarmerDashboard = () => {
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">Low Risk</div>
               <div className="text-sm text-gray-600 mb-4">
-                Your farm compliance is excellent
+                Your livestock compliance is excellent
               </div>
 
               <div className="space-y-2">
@@ -293,4 +293,4 @@ const FarmerDashboard = () => {
   )
 }
 
-export default FarmerDashboard
+export default ProducerDashboard
