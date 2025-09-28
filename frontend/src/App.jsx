@@ -42,6 +42,7 @@ import AuditTrail from './pages/regulator/AuditTrail'
 // Profile & Settings
 import Profile from './pages/shared/Profile'
 import Settings from './pages/shared/Settings'
+import QRScanner from './pages/shared/QRScanner'
 
 // Main Dashboard
 import MainDashboard from './components/common/MainDashboard'
@@ -194,6 +195,9 @@ function App() {
             <Route path="analytics" element={<Analytics />} />
             <Route path="compliance" element={<ComplianceReports />} />
             <Route path="audit" element={<AuditTrail />} />
+
+            {/* Shared Tools */}
+            <Route path="qr-scanner" element={<QRScanner />} />
 
             {/* Profile & Settings */}
             <Route path="profile" element={<Profile />} />

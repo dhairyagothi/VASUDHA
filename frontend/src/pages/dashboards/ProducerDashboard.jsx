@@ -40,35 +40,35 @@ const ProducerDashboard = () => {
       description: 'Quick drug administration entry',
       icon: BeakerIcon,
       color: 'bg-blue-500',
-      href: '/administration'
+      href: '/app/administration'
     },
     {
       title: 'Scan QR Code',
       description: 'Scan drug batch or sample QR',
       icon: QrCodeIcon,
       color: 'bg-green-500',
-      href: '/qr-scanner'
+      href: '/app/qr-scanner'
     },
     {
       title: 'Collect Sample',
       description: 'Register new sample collection',
       icon: IdentificationIcon,
       color: 'bg-purple-500',
-      href: '/sampling'
+      href: '/app/sampling'
     },
     {
       title: 'View Animals',
       description: 'Manage animal profiles',
       icon: UserGroupIcon,
       color: 'bg-orange-500',
-      href: '/animals'
+      href: '/app/animals'
     },
     {
       title: 'Order Supplies',
       description: 'Request new inventory items',
       icon: TruckIcon,
       color: 'bg-pink-500',
-      href: '/order-supplies'
+      href: '/app/inventory'
     }
   ]
 

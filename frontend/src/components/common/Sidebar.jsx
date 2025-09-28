@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     ]
 
     switch (user?.role) {
-      case 'farmer':
+      case 'producer':
         return [
           ...commonItems,
           { name: 'Farm Management', href: '/app/farms', icon: BuildingOfficeIcon },
@@ -48,6 +48,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { name: 'Farm Visits', href: '/app/farms', icon: MapIcon },
           { name: 'Animals', href: '/app/animals', icon: UserGroupIcon },
           { name: 'Drug Database', href: '/app/inventory', icon: CubeIcon },
+          { name: 'QR Scanner', href: '/app/qr-scanner', icon: QrCodeIcon },
           { name: 'Treatment History', href: '/app/administration', icon: DocumentTextIcon },
           { name: 'Analytics', href: '/app/analytics', icon: ChartBarIcon },
         ]
@@ -58,6 +59,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { name: 'Sample Queue', href: '/app/sampling', icon: BeakerIcon },
           { name: 'Test Results', href: '/app/lab-results', icon: DocumentTextIcon },
           { name: 'Test Reports', href: '/app/test-reports', icon: ClipboardDocumentIcon },
+          { name: 'QR Scanner', href: '/app/qr-scanner', icon: QrCodeIcon },
           { name: 'MRL Database', href: '/app/mrl-database', icon: ShieldCheckIcon },
           { name: 'Analytics', href: '/app/analytics', icon: ChartBarIcon },
         ]
@@ -70,6 +72,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           { name: 'Lab Results', href: '/app/lab-results', icon: BeakerIcon },
           { name: 'Audit Trail', href: '/app/audit', icon: DocumentTextIcon },
           { name: 'Risk Analytics', href: '/app/analytics', icon: ChartBarIcon },
+          { name: 'QR Scanner', href: '/app/qr-scanner', icon: QrCodeIcon },
           { name: 'IoT Monitoring', href: '/app/iot-monitoring', icon: BoltIcon },
           { name: 'Geographic View', href: '/app/geo-view', icon: MapIcon },
         ]
@@ -81,7 +84,18 @@ const Sidebar = ({ isOpen, onClose }) => {
           { name: 'Farm Registry', href: '/app/farms', icon: BuildingOfficeIcon },
           { name: 'System Analytics', href: '/app/analytics', icon: ChartBarIcon },
           { name: 'Audit Trail', href: '/app/audit', icon: DocumentTextIcon },
+          { name: 'QR Scanner', href: '/app/qr-scanner', icon: QrCodeIcon },
           { name: 'Settings', href: '/app/settings', icon: CogIcon },
+        ]
+
+      case 'collector':
+        return [
+          ...commonItems,
+          { name: 'Collection Schedule', href: '/app/sampling', icon: BeakerIcon },
+          { name: 'Farm Visits', href: '/app/farms', icon: BuildingOfficeIcon },
+          { name: 'Sample Management', href: '/app/lab-results', icon: DocumentTextIcon },
+          { name: 'QR Scanner', href: '/app/qr-scanner', icon: QrCodeIcon },
+          { name: 'Analytics', href: '/app/analytics', icon: ChartBarIcon },
         ]
       
       default:
@@ -174,10 +188,18 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Quick actions */}
         <div className="px-4 py-4 border-t border-gray-200">
           <div className="space-y-2">
-            <button className="w-full flex items-center px-3 py-2 text-sm text-green-600 hover:bg-green-50 rounded-lg">
+            <NavLink
+              to="/app/qr-scanner"
+              className="w-full flex items-center px-3 py-2 text-sm text-green-600 hover:bg-green-50 rounded-lg"
+              onClick={() => {
+                if (window.innerWidth < 1024) {
+                  onClose()
+                }
+              }}
+            >
               <QrCodeIcon className="h-4 w-4 mr-2" />
               Quick Scan
-            </button>
+            </NavLink>
             <button className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg">
               <BoltIcon className="h-4 w-4 mr-2" />
               AI Assistant
